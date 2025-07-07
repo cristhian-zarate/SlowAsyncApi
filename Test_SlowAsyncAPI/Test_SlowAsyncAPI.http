@@ -1,0 +1,6 @@
+@Test_SlowAsyncAPI_HostAddress = http://localhost:5018
+
+GET {{Test_SlowAsyncAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

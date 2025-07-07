@@ -1,0 +1,10 @@
+<div>
+  <input type="text" [(ngModel)]="inputText" placeholder="Enter text" />
+</div>
+<div>
+  <button (click)="run()" [disabled]="Running">Run</button>
+  <button (click)="cancel()" [disabled]="!Running">Cancel</button>
+</div>
+<div>
+  <span>{{responseText}}</span>
+</div>
