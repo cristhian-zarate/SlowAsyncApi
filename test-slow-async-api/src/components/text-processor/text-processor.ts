@@ -20,26 +20,14 @@ export class TextProcessor implements OnDestroy {
   run = () => {
     this.Running = true;
     this.responseText = '';
-    // this.textService.GetText(this.inputText)
-    //   .subscribe({
-    //     next: text => this.responseText += text,
-    //     error: err => console.error(err),
-    //     complete: () => {
-    //       console.log('FINISH');
-    //       this.Running = false;
-    //     }
-    //   });
 
-    const url = 'https://your-server.com/sse';
-    const options = { withCredentials: true };
-    const eventNames = ['myEventName'];
-    this.eventSourceSubscription = this.textService.connectToServerSentEvents(url, options, eventNames)
+    this.eventSourceSubscription = this.textService.GetText(this.inputText)
       .subscribe({
         next: data => {
           this.responseText += data;
         },
-        error: error => {
-          console.log('FINISH');
+        error: err => {
+          console.error(err);
           this.Running = false;
         }
       }
@@ -50,6 +38,5 @@ export class TextProcessor implements OnDestroy {
 
   ngOnDestroy(): void {
     this.eventSourceSubscription.unsubscribe();
-    this.textService.close();
   }
 }

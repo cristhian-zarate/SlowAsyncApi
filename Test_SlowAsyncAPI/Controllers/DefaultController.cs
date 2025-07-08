@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +8,9 @@ namespace Test_SlowAsyncAPI.Controllers;
 public class DefaultController : ControllerBase
 {
 	[HttpGet]
-	public async IAsyncEnumerable<char> Get(string text, [EnumeratorCancellation] CancellationToken cancellationToken)
+	public async Task Get(string text, CancellationToken cancellationToken)
 	{
-		Response.ContentType = "text/event-stream";
+		Response.ContentType = "text/plain";
 
 		string initialText = text.Trim();
 		string finalText = string.Empty;
@@ -29,32 +27,14 @@ public class DefaultController : ControllerBase
 		var encodedText = Convert.ToBase64String(Encoding.UTF8.GetBytes(initialText));
 		finalText = $"{letterCount}/{encodedText}";
 
-		// await foreach (char letter in GetLetterWithDelay(finalText, cancellationToken).WithCancellation(cancellationToken))
-		// {
-		// 	Console.Write(letter);
-		// 	yield return letter.ToString();
-		// }
-
 		Random r = new();
 		int delay;
 		foreach (char letter in finalText.ToCharArray())
 		{
 			delay = 125 + (125 * r.Next(0, 2)) + (250 * (r.Next(0, 4) % 3));
-			Debug.Write($"['{letter}',{delay}ms], ");
 			await Task.Delay(delay, cancellationToken);
-			yield return letter;
+			await Response.WriteAsync(letter.ToString());
+			await Response.Body.FlushAsync();
 		}
 	}
-
-	// public static async IAsyncEnumerable<char> GetLetterWithDelay(string text, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-	// {
-	// 	Random r = new();
-	// 	int delay;
-	// 	foreach (char letter in text.ToCharArray())
-	// 	{
-	// 		delay = 500 + (500 * r.Next(0, 3));
-	// 		await Task.Delay(delay, cancellationToken);
-	// 		yield return letter;
-	// 	}
-	// }
 }
