@@ -26,6 +26,7 @@ export class TextProcessor implements OnDestroy {
         next: data => {
           this.responseText += data;
         },
+        complete: () => this.Running = false,
         error: err => {
           console.error(err);
           this.Running = false;
@@ -34,7 +35,10 @@ export class TextProcessor implements OnDestroy {
       );
   };
 
-  cancel = () => this.Running = false;
+  cancel = () => {
+    this.textService.Abort();
+    this.Running = false;
+  }
 
   ngOnDestroy(): void {
     this.eventSourceSubscription.unsubscribe();

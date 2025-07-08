@@ -5,11 +5,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TextService {
+  private controller!: AbortController;
+
   public GetText(text: string): Observable<string> {
     return new Observable(observer => {
-      // const controller = new AbortController();
-
-      fetch(`http://localhost:5018/api/default?text=${text}`)
+      this.controller = new AbortController();
+      fetch(`http://localhost:5018/api/default?text=${text}`, { signal: this.controller.signal })
         .then(async response => {
           const reader = response.body?.getReader();
           if (!reader) {
@@ -31,4 +32,6 @@ export class TextService {
         .catch(err => observer.error(err));
     });
   }
+
+  public Abort = () => this.controller.abort();
 }
